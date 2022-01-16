@@ -35,14 +35,43 @@ resource "helm_release" "istio-base" {
   name       = "istio-base"
   repository = "https://istio-release.storage.googleapis.com/charts"
   chart      = "base"
-  version    = "1.12.0"
+  version    = "${var.istio-version}"
   namespace  = kubernetes_namespace.istio-system.id
+  depends_on = [
+    kubernetes_namespace.istio-system
+  ]
 }
 
 resource "helm_release" "istio-istiod" {
   name       = "istio-istiod"
   repository = "https://istio-release.storage.googleapis.com/charts"
   chart      = "istiod"
-  version    = "1.12.0"
+  version    = "${var.istio-version}"
   namespace  = kubernetes_namespace.istio-system.id
+  depends_on = [
+    kubernetes_namespace.istio-system,
+    helm_release.istio-base
+  ]
+}
+
+resource "kubernetes_namespace" "istio-ingress" {
+  metadata {
+    name = "istio-ingress"
+    labels = {
+      istio-injection = "enabled"
+    }
+  }
+}
+resource "helm_release" "istio-ingress" {
+  name       = "istio-ingress"
+  repository = "https://istio-release.storage.googleapis.com/charts"
+  chart      = "gateway"
+  version    = "${var.istio-version}"
+  namespace  = kubernetes_namespace.istio-system.id
+  depends_on = [
+    kubernetes_namespace.istio-system,
+    helm_release.istio-base,
+    kubernetes_namespace.istio-ingress,
+    helm_release.istio-istiod
+  ]
 }

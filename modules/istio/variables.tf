@@ -9,3 +9,9 @@ variable "cluster_ca_certificate" {
 variable "access_token" {
   type = string
 }
+
+variable "istio-version" {
+  type = string
+  default = "1.12.0"
+}
+ 
