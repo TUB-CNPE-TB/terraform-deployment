@@ -23,20 +23,28 @@ These steps will be replace by terraform files
 1. Run `gcloud auth login` to get a token
 1. Run `gcloud container clusters get-credentials --zone us-central1 --project dsp-sock-shop-juan $(terraform workspace show)-gke-sock-shop` to authenticate with your cluster. Replace project and zone according to your setup
 1. Rename cluster with `kubectx gke-$(terraform workspace show)=gke_dsp-sock-shop-juan_us-central1_$(terraform workspace show)-gke-sock-shop`
+
+## Optional: Install istio with istioctl
+
+The current terraform script already provide istio into the cluster using helm. However, it is also possible to install istio using istioctl
+
+1. Install istioctl using `brew install istioctl`
 1. Apply istio config `istioctl install`
 1. Install istio operators
-- `kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.11/samples/addons/kiali.yaml`
-- `kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.11/samples/addons/jaeger.yaml`
-- `kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.11/samples/addons/prometheus.yaml`
-- `kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.11/samples/addons/extras/zipkin.yaml`
-1. Apply manifests microservices `kubectl apply -f ../../manifests/.`
-1. Apply load test manifests `kubectl apply -f ../../manifests-loadtest/.`
-1. Last step is detroy the infrastructure with `terraform destroy`
+
+**Note**: Kiali requires prometheus to works. Additionally, it looks for jeager and grafana.
+
+- `kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.12/samples/addons/prometheus.yaml`
+- `kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.12/samples/addons/grafana.yaml`
+- `kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.12/samples/addons/jaeger.yaml`
+- `kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.12/samples/addons/kiali.yaml`
+- `kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.12/samples/addons/extras/zipkin.yaml`
 
 ### Istio operators dashboards
 
-- **Kiali**. istioctl dashboard kiali
-- **Prometheus**. istioctl dashboard prometheus
-- **Grafana**. istioctl dashboard grafana
-- **Jaeger**. istioctl dashboard jaeger
-- **Zipkin**. istioctl dashboard zipkin
+
+- **(Kiali)[https://istio.io/latest/docs/ops/integrations/kiali/]**. istioctl dashboard kiali
+- **(Prometheus)[https://istio.io/latest/docs/ops/integrations/prometheus/]**. istioctl dashboard prometheus
+- **(Grafana)[https://istio.io/latest/docs/ops/integrations/grafana/]**. istioctl dashboard grafana
+- **(Jaeger)[https://istio.io/latest/docs/ops/integrations/jaeger/]**. istioctl dashboard jaeger
+- **(Zipkin)[https://istio.io/latest/docs/ops/integrations/zipkin/]**. istioctl dashboard zipkin
